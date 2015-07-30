@@ -1,6 +1,5 @@
 (defproject foo "0.1.0-SNAPSHOT"
   :dependencies [[org.clojure/clojure "1.7.0"]
-                 [org.clojure/clojurescript "0.0-3211"]
                  [org.clojure/clojurescript "1.7.21"]]
 
   :source-paths ["src/clj"]
