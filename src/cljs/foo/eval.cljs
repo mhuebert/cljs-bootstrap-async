@@ -3,19 +3,26 @@
 
 (enable-console-print!)
 
-(defn try-def []
+(defn def-in-existing-ns []
   (cljs/eval (cljs/empty-state)
-             '(do
-                (enable-console-print!)
-                (def x 1)
-                (prn "x should be here: " x))
-             {:eval    (fn [js]
-                         (prn (:source js))
+             '(def x 1)
+             {:ns 'foo.other
+              :eval    (fn [js]
+                         (prn (:source js)) ;".x = 1"
                          (cljs/js-eval js))
-              :context :expr
-              :ns      'foo.core}
+              :verbose true
+              :context :expr}
+             prn))
+
+(defn def-in-new-namespace []
+  (cljs/eval (cljs/empty-state)
+             '(do (ns foo.totally-new)
+                  (def x 1))
+             {:eval    (fn [js]
+                         (prn (:source js)) ;"(function (){\ngoog.provide('foo.totally_new');\ngoog.require('cljs.core');\n\ncljs.user.x = 1;\n})()\n"
+                         (cljs/js-eval js))
+              :verbose true
+              :context :expr}
               prn))
-
-
 
 
