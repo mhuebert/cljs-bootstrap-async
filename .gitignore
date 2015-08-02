@@ -15,5 +15,3 @@ pom.xml
 *-init.clj
 .idea
 *.iml
-cljs.jar
-clojurescript-0.0-SNAPSHOT.jar
