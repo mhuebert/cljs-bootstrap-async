@@ -16,8 +16,8 @@
           cache (read-string cache-edn)]
       (cljs.js/load-analysis-cache! cstate s cache))))
 
-(def opts {:eval #(do (println (str "source: " (:source %))) (cljs/js-eval %))
-           :context :expr})
+(def compiler-opts {:eval #(do (println (str "source: " (:source %))) (cljs/js-eval %))
+                    :context :expr})
 
 (defn eval
   [st forms opts]
@@ -29,15 +29,22 @@
 
 (go
   (let [st (cljs/empty-state)
-        eval #(eval st % (merge opts {:ns 'foo.async}))]
+        eval-in-ns (fn [ns sexpr] (eval st sexpr (assoc compiler-opts :ns ns)))]
 
     (<! (load-cache st 'foo.async))
 
     ; works - call fn in 'foo.async
-    (<! (eval '(greeting "there.")))
+    (<! (eval-in-ns 'foo.async
+                    '(greeting "fred.") ))
 
     ; works - call fn in 'foo.async which uses `go` macro
-    (<! (<! (eval '(async-greeting "there."))))
+    (<! (<! (eval-in-ns 'foo.async
+                        '(async-greeting "susan."))))
+
+    ; works - use a referred var in 'foo.async
+    (<! (eval-in-ns 'foo.async
+                    '(GET "http://www.apple.com")))
 
     ; does not work - eval `go` macro in 'foo.async
-    (<! (eval '(go (<! (wait 1000 "async worked")))))))
+    (<! (eval-in-ns 'foo.async
+                    '(go (<! (wait 1000 "async worked")))))))

@@ -1,6 +1,7 @@
 (ns foo.async
   (:require-macros [cljs.core.async.macros :refer [go]])
-  (:require [cljs.core.async :refer [put! chan <!]]))
+  (:require [cljs.core.async :refer [put! chan <!]]
+            [foo.http :refer [GET]]))
 
 (defn greeting [n]
   (prn (str "Ordinary hello to you, " n)))
